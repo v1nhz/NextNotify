@@ -1,0 +1,48 @@
+*.iml
+.gradle
+/local.properties
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+.idea/compiler.xml
+.idea/gradle.xml
+.idea/deploymentTargetSelector.xml
+.idea/kotlinc.xml
+.idea/runConfigurations/
+.DS_Store
+/build
+/app/build
+**/build/
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+.kotlin
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+!.env.sample
+
+# Android build outputs
+*.apk
+*.aab
+*.ap_
+output-metadata.json
+
+# Signing files
+*.jks
+*.keystore
+
+# Logs and temp files
+*.log
+*.tmp
+*.temp
+
+# Editor/tooling
+.vscode/
+.cursor/

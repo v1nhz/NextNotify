@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.home.HomeFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/text_telegram_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/telegram_description"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="@string/telegram_bot_token_hint">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edit_bot_token"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textNoSuggestions"
+                tools:text="123456:ABCDEF" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:hint="@string/telegram_chat_id_hint">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edit_chat_id"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textNoSuggestions"
+                tools:text="-1001234567890" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_save_telegram"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/save_telegram_config" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_send_test"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/send_test_message" />
+
+        <TextView
+            android:id="@+id/text_telegram_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/telegram_status_empty"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            tools:text="Đã lưu cấu hình Telegram." />
+    </LinearLayout>
+</ScrollView>

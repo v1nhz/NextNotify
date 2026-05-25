@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.slideshow.SlideshowFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/text_system_services_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/system_services_description"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
+        <TextView
+            android:id="@+id/text_permission_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/system_permissions_missing"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            tools:text="Đã cấp đủ quyền RECEIVE_SMS và READ_PHONE_STATE." />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_request_permissions"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/request_required_permissions" />
+
+        <TextView
+            android:id="@+id/text_background_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="@string/background_access_description"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
+        <TextView
+            android:id="@+id/text_background_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/background_access_status_unknown"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_request_background_access"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/request_background_access" />
+
+        <TextView
+            android:id="@+id/text_boot_rebind_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/boot_rebind_status"
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
+
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/switch_sms"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:showText="false"
+            android:text="@string/forward_sms" />
+
+        <TextView
+            android:id="@+id/text_sms_hint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="@string/forward_sms_hint"
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
+
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/switch_incoming_call"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:showText="false"
+            android:text="@string/forward_incoming_call" />
+
+        <TextView
+            android:id="@+id/text_incoming_call_hint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="@string/forward_incoming_call_hint"
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
+
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/switch_missed_call"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:showText="false"
+            android:text="@string/forward_missed_call" />
+
+        <TextView
+            android:id="@+id/text_missed_call_hint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="@string/forward_missed_call_hint"
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption" />
+    </LinearLayout>
+</ScrollView>
