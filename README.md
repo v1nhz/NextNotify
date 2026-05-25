@@ -1,8 +1,14 @@
+<p align="center">
+  <img src="app/src/main/res/mipmap-xxxhdpi/ic_launcher.png" width="180" alt="NextNotify Logo" />
+</p>
+
 # NextNotify
 
 NextNotify is a smart Android notification forwarding application that allows users to monitor important device activities in real time through Telegram.
 
 The application can securely access Android system notifications, SMS messages, and phone call events, then automatically forward selected information to a Telegram bot or chat.
+
+
 
 ---
 
