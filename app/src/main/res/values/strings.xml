@@ -20,7 +20,7 @@
     <string name="open_notification_access_settings">Mở màn hình cấp Notification Access</string>
     <string name="system_services_description">Bật hoặc tắt từng loại sự kiện hệ thống muốn chuyển tiếp lên Telegram. SMS và cuộc gọi cần quyền runtime tương ứng.</string>
     <string name="system_permissions_missing">Chưa cấp đủ quyền hệ thống.</string>
-    <string name="request_required_permissions">Xin quyền SMS, trạng thái cuộc gọi và call log</string>
+    <string name="request_required_permissions">Xin quyền SMS, trạng thái cuộc gọi, số SIM và call log</string>
     <string name="background_access_description">Để app hoạt động ổn định khi chạy nền, nên tắt tối ưu pin cho NextNotify. Sau khi khởi động lại máy hoặc cập nhật app, NextNotify sẽ tự yêu cầu hệ thống bind lại notification listener.</string>
     <string name="background_access_status_unknown">Chưa kiểm tra trạng thái chạy nền.</string>
     <string name="request_background_access">Tắt tối ưu pin cho NextNotify</string>
@@ -28,9 +28,11 @@
     <string name="forward_sms">Gửi SMS đến Telegram</string>
     <string name="forward_sms_hint">Chuyển tiếp nội dung SMS vừa nhận được.</string>
     <string name="forward_incoming_call">Gửi thông báo cuộc gọi đến</string>
-    <string name="forward_incoming_call_hint">Gửi ngay khi điện thoại đang đổ chuông. Để lấy được số ổn định hơn, hãy cấp thêm quyền đọc call log.</string>
+    <string name="forward_incoming_call_hint">Gửi ngay khi điện thoại đang đổ chuông. Nếu muốn hiện SIM 1/SIM 2 và số thuê bao của SIM được gọi, hãy cấp thêm quyền đọc số điện thoại và call log.</string>
     <string name="forward_missed_call">Gửi thông báo cuộc gọi nhỡ</string>
     <string name="forward_missed_call_hint">Gửi khi cuộc gọi đến không được nghe máy. App sẽ ưu tiên lấy số từ call log nếu broadcast không có số.</string>
+    <string name="forward_ended_call">Gửi thông báo cuộc gọi kết thúc</string>
+    <string name="forward_ended_call_hint">Gửi khi một cuộc gọi vừa kết thúc và lấy thời lượng từ call log. Cần cấp quyền đọc call log để app có thể đọc duration.</string>
     <string name="app_icon_content_description">Biểu tượng ứng dụng</string>
     <string name="notification_listener_label">NextNotify notification listener</string>
     <string name="foreground_service_channel_name">NextNotify background service</string>

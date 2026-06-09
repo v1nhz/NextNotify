@@ -63,6 +63,13 @@ class AppSettingsStore(context: Context) {
         preferences.edit().putBoolean(KEY_FORWARD_MISSED_CALLS, enabled).apply()
     }
 
+    fun isEndedCallForwardingEnabled(): Boolean =
+        preferences.getBoolean(KEY_FORWARD_ENDED_CALLS, false)
+
+    fun setEndedCallForwardingEnabled(enabled: Boolean) {
+        preferences.edit().putBoolean(KEY_FORWARD_ENDED_CALLS, enabled).apply()
+    }
+
     companion object {
         private const val PREFS_NAME = "next_notify_settings"
         private const val KEY_BOT_TOKEN = "bot_token"
@@ -71,5 +78,6 @@ class AppSettingsStore(context: Context) {
         private const val KEY_FORWARD_SMS = "forward_sms"
         private const val KEY_FORWARD_INCOMING_CALLS = "forward_incoming_calls"
         private const val KEY_FORWARD_MISSED_CALLS = "forward_missed_calls"
+        private const val KEY_FORWARD_ENDED_CALLS = "forward_ended_calls"
     }
 }

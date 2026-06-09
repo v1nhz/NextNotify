@@ -5,6 +5,7 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.PowerManager
 import android.provider.Settings
@@ -55,17 +56,14 @@ class SlideshowFragment : Fragment() {
         binding.switchSms.isChecked = settingsStore.isSmsForwardingEnabled()
         binding.switchIncomingCall.isChecked = settingsStore.isIncomingCallForwardingEnabled()
         binding.switchMissedCall.isChecked = settingsStore.isMissedCallForwardingEnabled()
+        binding.switchEndedCall.isChecked = settingsStore.isEndedCallForwardingEnabled()
         updatePermissionStatus()
         updateBackgroundAccessStatus()
     }
 
     private fun bindActions() {
         binding.buttonRequestPermissions.setOnClickListener {
-            val missingPermissions = listOf(
-                Manifest.permission.RECEIVE_SMS,
-                Manifest.permission.READ_PHONE_STATE,
-                Manifest.permission.READ_CALL_LOG
-            ).filterNot(::hasPermission)
+            val missingPermissions = requiredPermissions().filterNot(::hasPermission)
 
             if (missingPermissions.isNotEmpty()) {
                 permissionsLauncher.launch(missingPermissions.toTypedArray())
@@ -86,6 +84,10 @@ class SlideshowFragment : Fragment() {
             settingsStore.setMissedCallForwardingEnabled(enabled)
         }
 
+        binding.switchEndedCall.setOnCheckedChangeListener { _, enabled ->
+            settingsStore.setEndedCallForwardingEnabled(enabled)
+        }
+
         binding.buttonRequestBackgroundAccess.setOnClickListener {
             openBackgroundAccessSettings()
         }
@@ -94,6 +96,11 @@ class SlideshowFragment : Fragment() {
     private fun updatePermissionStatus() {
         val smsGranted = hasPermission(Manifest.permission.RECEIVE_SMS)
         val phoneGranted = hasPermission(Manifest.permission.READ_PHONE_STATE)
+        val phoneNumbersGranted = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            hasPermission(Manifest.permission.READ_PHONE_NUMBERS)
+        } else {
+            true
+        }
         val callLogGranted = hasPermission(Manifest.permission.READ_CALL_LOG)
 
         binding.textPermissionStatus.text = buildString {
@@ -103,8 +110,22 @@ class SlideshowFragment : Fragment() {
             append("READ_PHONE_STATE: ")
             append(if (phoneGranted) "đã cấp" else "chưa cấp")
             append('\n')
+            append("READ_PHONE_NUMBERS: ")
+            append(if (phoneNumbersGranted) "đã cấp" else "chưa cấp")
+            append('\n')
             append("READ_CALL_LOG: ")
             append(if (callLogGranted) "đã cấp" else "chưa cấp")
+        }
+    }
+
+    private fun requiredPermissions(): List<String> {
+        return buildList {
+            add(Manifest.permission.RECEIVE_SMS)
+            add(Manifest.permission.READ_PHONE_STATE)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                add(Manifest.permission.READ_PHONE_NUMBERS)
+            }
+            add(Manifest.permission.READ_CALL_LOG)
         }
     }
 
