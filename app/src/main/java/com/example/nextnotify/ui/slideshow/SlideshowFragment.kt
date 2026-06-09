@@ -24,8 +24,17 @@ class SlideshowFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var settingsStore: AppSettingsStore
 
-    private val permissionsLauncher = registerForActivityResult(
+    private val phonePermissionsLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
+    ) {
+        if (_binding != null) {
+            requestSmsPermissionIfNeeded()
+            updatePermissionStatus()
+        }
+    }
+
+    private val smsPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
     ) {
         if (_binding != null) {
             updatePermissionStatus()
@@ -63,17 +72,18 @@ class SlideshowFragment : Fragment() {
 
     private fun bindActions() {
         binding.buttonRequestPermissions.setOnClickListener {
-            val missingPermissions = requiredPermissions().filterNot(::hasPermission)
+            requestPhonePermissionsIfNeeded()
+        }
 
-            if (missingPermissions.isNotEmpty()) {
-                permissionsLauncher.launch(missingPermissions.toTypedArray())
-            } else {
-                updatePermissionStatus()
-            }
+        binding.buttonOpenSmsSettings.setOnClickListener {
+            openAppSettings()
         }
 
         binding.switchSms.setOnCheckedChangeListener { _, enabled ->
             settingsStore.setSmsForwardingEnabled(enabled)
+            if (enabled && !hasPermission(Manifest.permission.RECEIVE_SMS)) {
+                requestSmsPermissionIfNeeded()
+            }
         }
 
         binding.switchIncomingCall.setOnCheckedChangeListener { _, enabled ->
@@ -93,6 +103,31 @@ class SlideshowFragment : Fragment() {
         }
     }
 
+    private fun requestPhonePermissionsIfNeeded() {
+        val missingPhonePermissions = phonePermissions().filterNot(::hasPermission)
+        if (missingPhonePermissions.isNotEmpty()) {
+            phonePermissionsLauncher.launch(missingPhonePermissions.toTypedArray())
+            return
+        }
+
+        requestSmsPermissionIfNeeded()
+        updatePermissionStatus()
+    }
+
+    private fun requestSmsPermissionIfNeeded() {
+        if (hasPermission(Manifest.permission.RECEIVE_SMS)) {
+            updatePermissionStatus()
+            return
+        }
+
+        smsPermissionLauncher.launch(Manifest.permission.RECEIVE_SMS)
+    }
+
+    private fun shouldShowManualSmsGrantGuidance(): Boolean {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            !hasPermission(Manifest.permission.RECEIVE_SMS)
+    }
+
     private fun updatePermissionStatus() {
         val smsGranted = hasPermission(Manifest.permission.RECEIVE_SMS)
         val phoneGranted = hasPermission(Manifest.permission.READ_PHONE_STATE)
@@ -102,10 +137,14 @@ class SlideshowFragment : Fragment() {
             true
         }
         val callLogGranted = hasPermission(Manifest.permission.READ_CALL_LOG)
+        val needsManualSmsGrant = shouldShowManualSmsGrantGuidance()
 
         binding.textPermissionStatus.text = buildString {
             append("RECEIVE_SMS: ")
             append(if (smsGranted) "đã cấp" else "chưa cấp")
+            if (needsManualSmsGrant) {
+                append(" (cần bật thủ công trong cài đặt hệ thống)")
+            }
             append('\n')
             append("READ_PHONE_STATE: ")
             append(if (phoneGranted) "đã cấp" else "chưa cấp")
@@ -116,16 +155,32 @@ class SlideshowFragment : Fragment() {
             append("READ_CALL_LOG: ")
             append(if (callLogGranted) "đã cấp" else "chưa cấp")
         }
+
+        val smsGuidanceVisibility = if (needsManualSmsGrant) View.VISIBLE else View.GONE
+        binding.textSmsPermissionHint.visibility = smsGuidanceVisibility
+        binding.buttonOpenSmsSettings.visibility = smsGuidanceVisibility
     }
 
-    private fun requiredPermissions(): List<String> {
+    private fun phonePermissions(): List<String> {
         return buildList {
-            add(Manifest.permission.RECEIVE_SMS)
             add(Manifest.permission.READ_PHONE_STATE)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 add(Manifest.permission.READ_PHONE_NUMBERS)
             }
             add(Manifest.permission.READ_CALL_LOG)
+        }
+    }
+
+    private fun openAppSettings() {
+        val packageUri = Uri.parse("package:${requireContext().packageName}")
+        val settingsIntent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+            data = packageUri
+        }
+
+        try {
+            startActivity(settingsIntent)
+        } catch (_: ActivityNotFoundException) {
+            startActivity(Intent(Settings.ACTION_SETTINGS))
         }
     }
 

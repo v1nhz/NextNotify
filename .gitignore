@@ -37,6 +37,8 @@ output-metadata.json
 # Signing files
 *.jks
 *.keystore
+keystore.properties
+keystore.password
 
 # Logs and temp files
 *.log

@@ -1,6 +1,7 @@
 package com.example.nextnotify.service
 
 import android.app.Notification
+import android.content.ComponentName
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
@@ -21,6 +22,14 @@ class NotificationForwardingService : NotificationListenerService() {
         super.onCreate()
         settingsStore = AppSettingsStore(this)
         telegramSender = TelegramSender(this)
+    }
+
+    override fun onListenerConnected() {
+        super.onListenerConnected()
+        try {
+            requestRebind(ComponentName(this, NotificationForwardingService::class.java))
+        } catch (_: Exception) {
+        }
     }
 
     override fun onNotificationPosted(sbn: StatusBarNotification) {
@@ -112,7 +121,54 @@ class NotificationForwardingService : NotificationListenerService() {
             return messages.joinToString(separator = " | ")
         }
 
+        val infoText = extras.getCharSequence(Notification.EXTRA_INFO_TEXT)?.toString()?.trim().orEmpty()
+        if (infoText.isNotBlank()) {
+            return infoText
+        }
+
+        val fallbackText = extractTextFromAllExtras(extras)
+        if (fallbackText.isNotBlank()) {
+            return fallbackText
+        }
+
         return notification.tickerText?.toString().orEmpty().trim()
+    }
+
+    private fun extractTextFromAllExtras(extras: Bundle): String {
+        val ignoredKeys = setOf(
+            Notification.EXTRA_TITLE,
+            Notification.EXTRA_TITLE_BIG,
+            Notification.EXTRA_CONVERSATION_TITLE,
+            Notification.EXTRA_SUB_TEXT,
+            Notification.EXTRA_SUMMARY_TEXT,
+            Notification.EXTRA_TEXT_LINES,
+            Notification.EXTRA_MESSAGES,
+            Notification.EXTRA_LARGE_ICON,
+            Notification.EXTRA_LARGE_ICON_BIG,
+            Notification.EXTRA_PICTURE,
+            Notification.EXTRA_PICTURE_ICON,
+            Notification.EXTRA_SHOW_WHEN,
+            Notification.EXTRA_SHOW_CHRONOMETER,
+            Notification.EXTRA_PROGRESS,
+            Notification.EXTRA_PROGRESS_MAX
+        )
+
+        return extras.keySet()
+            .filterNot { it.startsWith("android.") && it.endsWith(".icon") }
+            .filterNot { ignoredKeys.contains(it) }
+            .mapNotNull { key ->
+                when (val value = extras.get(key)) {
+                    is CharSequence -> value.toString().trim().takeIf { it.isNotBlank() }
+                    is Array<*> -> value
+                        .mapNotNull { (it as? CharSequence)?.toString()?.trim() }
+                        .filter { it.isNotBlank() }
+                        .joinToString(separator = " | ")
+                        .takeIf { it.isNotBlank() }
+                    else -> null
+                }
+            }
+            .distinct()
+            .joinToString(separator = " | ")
     }
 
     private fun formatMessagingStyleBundle(bundle: Bundle): String? {

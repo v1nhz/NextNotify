@@ -1,7 +1,10 @@
 package com.example.nextnotify
 
+import android.content.ComponentName
 import android.os.Bundle
+import android.service.notification.NotificationListenerService
 import android.view.Menu
+import com.example.nextnotify.service.NotificationForwardingService
 import com.google.android.material.navigation.NavigationView
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -21,6 +24,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         NextNotifyService.start(this)
+        requestNotificationListenerRebind()
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -48,5 +52,14 @@ class MainActivity : AppCompatActivity() {
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
+    }
+
+    private fun requestNotificationListenerRebind() {
+        try {
+            NotificationListenerService.requestRebind(
+                ComponentName(this, NotificationForwardingService::class.java)
+            )
+        } catch (_: Exception) {
+        }
     }
 }

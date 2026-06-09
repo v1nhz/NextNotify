@@ -41,7 +41,9 @@ class AppSelectionAdapter(
     }
 
     override fun onBindViewHolder(holder: AppViewHolder, position: Int) {
-        holder.bind(items[position], selectedPackages.contains(items[position].packageName))
+        val packageName = items[position].packageName
+        val isEnabled = selectedPackages.isEmpty() || selectedPackages.contains(packageName)
+        holder.bind(items[position], isEnabled)
     }
 
     override fun getItemCount(): Int = items.size

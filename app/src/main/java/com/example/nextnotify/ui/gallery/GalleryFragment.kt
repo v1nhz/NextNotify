@@ -1,20 +1,25 @@
 package com.example.nextnotify.ui.gallery
 
+import android.content.ActivityNotFoundException
+import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.ResolveInfo
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
+import android.service.notification.NotificationListenerService
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.core.app.NotificationManagerCompat
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.nextnotify.data.AppSettingsStore
 import com.example.nextnotify.databinding.FragmentGalleryBinding
+import com.example.nextnotify.service.NotificationForwardingService
 import java.util.concurrent.Executors
 
 class GalleryFragment : Fragment() {
@@ -23,6 +28,7 @@ class GalleryFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var settingsStore: AppSettingsStore
     private lateinit var adapter: AppSelectionAdapter
+    private var wasNotificationAccessEnabled = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,6 +50,11 @@ class GalleryFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+        val notificationAccessEnabled = isNotificationAccessEnabled()
+        if (notificationAccessEnabled && !wasNotificationAccessEnabled) {
+            requestNotificationListenerRebind()
+        }
+        wasNotificationAccessEnabled = notificationAccessEnabled
         updateNotificationAccessStatus()
         if (_binding != null) {
             adapter.updateSelection(settingsStore.getSelectedPackages())
@@ -56,17 +67,52 @@ class GalleryFragment : Fragment() {
         binding.buttonOpenNotificationAccess.setOnClickListener {
             startActivity(Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS))
         }
+        binding.buttonOpenAppSettings.setOnClickListener {
+            openAppSettings()
+        }
+        wasNotificationAccessEnabled = isNotificationAccessEnabled()
         updateNotificationAccessStatus()
     }
 
     private fun updateNotificationAccessStatus() {
-        val enabled = NotificationManagerCompat.getEnabledListenerPackages(requireContext())
-            .contains(requireContext().packageName)
+        val enabled = isNotificationAccessEnabled()
+        val needsRestrictedSettingsHint = !enabled && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
 
         binding.textNotificationAccessStatus.text = if (enabled) {
-            "Notification Access đã được bật. Chỉ những app được bật trong danh sách bên dưới mới được gửi."
+            getString(com.example.nextnotify.R.string.notification_access_enabled)
         } else {
-            "Notification Access chưa được bật. Hãy cấp quyền để app đọc thông báo từ các ứng dụng đã chọn."
+            getString(com.example.nextnotify.R.string.notification_access_missing)
+        }
+
+        val restrictedHintVisibility = if (needsRestrictedSettingsHint) View.VISIBLE else View.GONE
+        binding.textNotificationAccessHint.visibility = restrictedHintVisibility
+        binding.buttonOpenAppSettings.visibility = restrictedHintVisibility
+    }
+
+    private fun isNotificationAccessEnabled(): Boolean {
+        return NotificationManagerCompat.getEnabledListenerPackages(requireContext())
+            .contains(requireContext().packageName)
+    }
+
+    private fun requestNotificationListenerRebind() {
+        try {
+            NotificationListenerService.requestRebind(
+                ComponentName(requireContext(), NotificationForwardingService::class.java)
+            )
+        } catch (_: Exception) {
+        }
+    }
+
+    private fun openAppSettings() {
+        val packageUri = Uri.parse("package:${requireContext().packageName}")
+        val settingsIntent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+            data = packageUri
+        }
+
+        try {
+            startActivity(settingsIntent)
+        } catch (_: ActivityNotFoundException) {
+            startActivity(Intent(Settings.ACTION_SETTINGS))
         }
     }
 
@@ -115,16 +161,6 @@ class GalleryFragment : Fragment() {
             packageManager.queryIntentActivities(launcherIntent, 0)
         }
     }
-
-    @Suppress("unused")
-    private fun getInstalledApplications(packageManager: android.content.pm.PackageManager) =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            packageManager.getInstalledApplications(
-                android.content.pm.PackageManager.ApplicationInfoFlags.of(0)
-            )
-        } else {
-            packageManager.getInstalledApplications(0)
-        }
 
     companion object {
         private val EXECUTOR = Executors.newSingleThreadExecutor()
